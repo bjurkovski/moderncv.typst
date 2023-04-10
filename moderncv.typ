@@ -15,14 +15,16 @@
  *
  * - `cventry`: used to write a CV entry. Builds on `cvgrid`
  *
- * - `cvlangauge`: used to write a language entry. Builds on `cvgrid`
+ * - `cvlanguage`: used to write a language entry. Builds on `cvgrid`
  *
  */
 
-#let left_column_size = 25%
-#let grid_column_gutter = 8pt
+#let default_left_column_size = 25%
+#let default_grid_column_gutter = 8pt
+#let default_grid_bottom_padding = 0.8em
+#let default_font = ("Latin Modern Sans", "Inria Sans")
 
-#let main_color = rgb(147, 14, 14)
+#let main_color = rgb("#2E86C1")
 #let heading_color = main_color
 #let job_color = rgb("#737373")
 
@@ -32,16 +34,17 @@
   phone: "",
   email: "",
   github: "",
-  left_column_size: left_column_size,
-  grid_column_gutter: grid_column_gutter,
+  left_column_size: default_left_column_size,
+  grid_column_gutter: default_grid_column_gutter,
   main_color: main_color,
   heading_color: heading_color,
   job_color: job_color,
+  font: default_font,
   body
 ) = {
   set document(author: author, title: title)
   set page(numbering: none)
-  set text(font: ("Latin Modern Sans", "Inria Sans"), lang: "en", fallback: true)
+  set text(font: font, lang: "en", fallback: true)
   show math.equation: set text(weight: 400)
 
   /*
@@ -54,7 +57,7 @@
   show heading.where(level: 1): element => [
     #v(0em)
     #box(
-      inset: (right: grid_column_gutter, bottom: 0.1em),
+      inset: (right: grid_column_gutter, bottom: 0.2em),
       rect(fill: main_color, width: left_column_size, height: 0.25em)
     )
     #text(element.body, fill: heading_color, weight: 400)
@@ -80,10 +83,12 @@
       // Author information.
       #text([#author], weight: 400, 2.5em)
     
-      #v(-1.2em)
+      #v(-2.4em)
     
       // Title row.
       #block(text(weight: 400, 1.5em, title, style: "italic", fill: job_color))
+
+      #v(0.8em)
     ],
     align(right + top)[
       // Contact information
@@ -131,21 +136,34 @@
 
 #let daterange(start: (month: "", year: []), end: (month: "", year: [])) = box(
   stack(dir: ltr,
-    spacing: 0.75em,
+    spacing: 0.65em,
     datebox(month: start.month, year: start.year),
     [--],
     datebox(month: end.month, year: end.year)
   )
 )
 
-#let cvgrid(..cells) = pad(bottom: 0.8em)[#grid(
+#let cvgrid(
+  left_column_size: default_left_column_size,
+  bottom_padding: default_grid_bottom_padding,
+  ..cells
+) = pad(bottom: bottom_padding)[#grid(
   columns: (left_column_size, auto),
   row-gutter: 0em,
-  column-gutter: grid_column_gutter,
+  column-gutter: default_grid_column_gutter,
   ..cells
 )]
 
-#let cvcol(content) = cvgrid([], content)
+#let cvcol(
+  left_column_size: default_left_column_size,
+  bottom_padding: default_grid_bottom_padding,
+  content
+) = cvgrid(
+  left_column_size: left_column_size,
+  bottom_padding: bottom_padding,
+  [],
+  content
+)
 
 #let xdot(s) = {
   if s.ends-with(".") {
@@ -156,13 +174,18 @@
 }
 
 #let cventry(
+  left_column_size: default_left_column_size,
   description,
   start: (month: "", year: ""),
   end: (month: "", year: ""),
   place: "",
   role: []
 ) = cvgrid(
-  align(center, daterange(start: start, end: end)),
+  left_column_size: left_column_size,
+  [
+    #v(0.2em)
+    #daterange(start: start, end: end)
+  ],
   [
     == #role
     === #xdot(place)
@@ -172,10 +195,13 @@
 )
 
 #let cvlanguage(
+  left_column_size: default_left_column_size,
+  bottom_padding: default_grid_bottom_padding,
   language: [],
-  description: [],
-  certificate: [],
+  description: []
 ) = cvgrid(
-  align(right, language),
-  [#description #h(3em) #text(style: "italic", certificate)],
+  left_column_size: left_column_size,
+  bottom_padding: bottom_padding,
+  align(right, text(weight: 600, language)),
+  align(left, [#description]),
 )
