@@ -179,6 +179,7 @@
   start: (month: "", year: ""),
   end: (month: "", year: ""),
   place: "",
+  location: "",
   role: []
 ) = cvgrid(
   left_column_size: left_column_size,
@@ -188,7 +189,8 @@
   ],
   [
     == #role
-    === #xdot(place)
+	=== #text(place + " -")
+    #xdot(location)
   ],
   [],
   description
