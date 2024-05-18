@@ -190,7 +190,7 @@
   [
     == #role
     === #text(place + " -")
-    #h(0em) #xdot(location)
+    #xdot(location)
   ],
   [],
   description
